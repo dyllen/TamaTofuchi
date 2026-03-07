@@ -2,6 +2,12 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1351.h>
+
+// Match SquareLine Studio's LVGL color byte-order setting.
+#ifndef LV_COLOR_16_SWAP
+#define LV_COLOR_16_SWAP 1
+#endif
+
 #include <lvgl.h>
 
 // -----------------------------------------------------------------------------
@@ -40,17 +46,12 @@ static void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t
   const int32_t x2 = area->x2;
   const int32_t y2 = area->y2;
 
-  uint16_t w = static_cast<uint16_t>(x2 - x1 + 1);
-  uint16_t h = static_cast<uint16_t>(y2 - y1 + 1);
-
-  display.startWrite();
-  display.setAddrWindow(x1, y1, w, h);
-
-  for (uint32_t i = 0; i < static_cast<uint32_t>(w) * h; i++) {
-    display.writePixel(color_p[i].full);
+  uint32_t i = 0;
+  for (int32_t y = y1; y <= y2; y++) {
+    for (int32_t x = x1; x <= x2; x++) {
+      display.writePixel(x, y, color_p[i++].full);
+    }
   }
-
-  display.endWrite();
   lv_disp_flush_ready(disp);
 }
 
