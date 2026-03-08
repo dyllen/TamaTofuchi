@@ -55,7 +55,12 @@ static void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t
   display.setAddrWindow(x1, y1, w, h);
   const uint32_t px_count = static_cast<uint32_t>(w) * static_cast<uint32_t>(h);
   for (uint32_t i = 0; i < px_count; ++i) {
-    display.writeColor(color_p[i].full, 1);
+    uint16_t color = color_p[i].full;
+#if LV_COLOR_16_SWAP
+    // LVGL buffer stores swapped bytes; SSD1351 expects normal RGB565 order.
+    color = static_cast<uint16_t>((color >> 8) | (color << 8));
+#endif
+    display.writeColor(color, 1);
   }
   display.endWrite();
 
