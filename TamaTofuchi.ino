@@ -60,7 +60,7 @@ static void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t
   uint32_t i = 0;
   for (int32_t y = y1; y <= y2; y++) {
     for (int32_t x = x1; x <= x2; x++) {
-      display.drawPixel(x, y, color_p[i++].full);
+      display.writePixel(x, y, color_p[i++].full);
     }
   }
   lv_disp_flush_ready(disp);
