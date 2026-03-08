@@ -2,16 +2,26 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1351.h>
+
+// Match SquareLine Studio's LVGL color byte-order setting.
+#ifndef LV_COLOR_16_SWAP
+#define LV_COLOR_16_SWAP 1
+#endif
+
 #include <lvgl.h>
 
 // -----------------------------------------------------------------------------
 // Display + pinout (same wiring as before)
 // -----------------------------------------------------------------------------
-static constexpr uint8_t TFT_CS   = 3;
-static constexpr uint8_t TFT_DC   = 4;
-static constexpr uint8_t TFT_RST  = 5;
-static constexpr uint8_t TFT_SCK  = 8;
-static constexpr uint8_t TFT_MOSI = 10;
+static constexpr uint8_t TFT_CS  = 3;
+static constexpr uint8_t TFT_DC  = 4;
+static constexpr uint8_t TFT_RST = 5;
+
+// On many SSD1351 breakouts these are labeled SCL/SDA, but in SPI mode they map to:
+//   display SCL -> SPI SCK (clock)
+//   display SDA -> SPI MOSI (data out from MCU)
+static constexpr uint8_t TFT_SCL  = 8;   // SPI clock (SCK)
+static constexpr uint8_t TFT_SDA  = 10;  // SPI MOSI
 
 static constexpr uint16_t SCREEN_W = 128;
 static constexpr uint16_t SCREEN_H = 128;
@@ -19,11 +29,11 @@ static constexpr uint16_t SCREEN_H = 128;
 Adafruit_SSD1351 display(SCREEN_W, SCREEN_H, &SPI, TFT_CS, TFT_DC, TFT_RST);
 
 // -----------------------------------------------------------------------------
-// SquareLine Studio UI includes (uncomment when your generated files are added)
+// SquareLine Studio generated UI
 // -----------------------------------------------------------------------------
-// #include "ui.h"
-// #include "ui_helpers.h"
-// #include "ui_events.h"
+#include "ui.h"
+#include "ui_helpers.h"
+#include "ui_events.h"
 
 // -----------------------------------------------------------------------------
 // LVGL draw buffer
@@ -35,30 +45,32 @@ static lv_disp_drv_t disp_drv;
 static uint32_t last_tick_ms = 0;
 
 static void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
-  const int32_t x1 = area->x1;
-  const int32_t y1 = area->y1;
-  const int32_t x2 = area->x2;
-  const int32_t y2 = area->y2;
+  const int16_t x1 = static_cast<int16_t>(area->x1);
+  const int16_t y1 = static_cast<int16_t>(area->y1);
+  const int16_t w = static_cast<int16_t>(area->x2 - area->x1 + 1);
+  const int16_t h = static_cast<int16_t>(area->y2 - area->y1 + 1);
 
-  uint16_t w = static_cast<uint16_t>(x2 - x1 + 1);
-  uint16_t h = static_cast<uint16_t>(y2 - y1 + 1);
-
+  // Stream the LVGL dirty area directly into the SSD1351 GRAM window.
   display.startWrite();
   display.setAddrWindow(x1, y1, w, h);
-
-  for (uint32_t i = 0; i < static_cast<uint32_t>(w) * h; i++) {
-    display.writePixel(color_p[i].full);
+  const uint32_t px_count = static_cast<uint32_t>(w) * static_cast<uint32_t>(h);
+  for (uint32_t i = 0; i < px_count; ++i) {
+    display.writeColor(color_p[i].full, 1);
   }
-
   display.endWrite();
+
   lv_disp_flush_ready(disp);
 }
 
 void setup() {
   Serial.begin(115200);
 
-  SPI.begin(TFT_SCK, -1, TFT_MOSI, TFT_CS);
+  Serial.println("SSD1351 SPI mapping: SCL->SCK, SDA->MOSI");
+  SPI.begin(TFT_SCL, -1, TFT_SDA, TFT_CS);
   display.begin();
+  // Hardware sanity check: briefly flash white so you can confirm panel power.
+  display.fillScreen(0xFFFF);
+  delay(120);
   display.fillScreen(0x0000);
 
   lv_init();
@@ -72,8 +84,7 @@ void setup() {
   disp_drv.draw_buf = &draw_buf;
   lv_disp_drv_register(&disp_drv);
 
-  // SquareLine Studio entry point:
-  // ui_init();
+  ui_init();
 
   last_tick_ms = millis();
 }
