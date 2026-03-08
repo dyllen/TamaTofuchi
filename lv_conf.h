@@ -12,13 +12,13 @@
 #endif
 
 /*
- * Never macro-remap lv_event_send in lv_conf.h.
- * A function-like macro named lv_event_send rewrites LVGL's own declaration in
- * lv_event.h and causes parse errors like:
- *   expected declaration specifiers or '...' before '(' token
+ * SquareLine-generated helpers use the LVGL v8 call shape
+ *   lv_event_send(obj, code, param)
+ * When building with LVGL v9, remap it to lv_obj_send_event(...) so generated
+ * ui_helpers.c/ui_helpers.h compile without edits.
  */
-#ifdef lv_event_send
-#undef lv_event_send
+#ifndef lv_event_send
+#define lv_event_send(obj, code, param) lv_obj_send_event((obj), (code), (param))
 #endif
 
 #endif /* LV_CONF_H */
