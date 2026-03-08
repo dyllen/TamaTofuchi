@@ -31,9 +31,16 @@ Adafruit_SSD1351 display(SCREEN_W, SCREEN_H, &SPI, TFT_CS, TFT_DC, TFT_RST);
 // -----------------------------------------------------------------------------
 // SquareLine Studio generated UI
 // -----------------------------------------------------------------------------
+#if defined(__has_include)
+#if __has_include("ui.h")
 #include "ui.h"
-#include "ui_helpers.h"
-#include "ui_events.h"
+#define HAS_SQUARELINE_UI 1
+#else
+#define HAS_SQUARELINE_UI 0
+#endif
+#else
+#define HAS_SQUARELINE_UI 0
+#endif
 
 // -----------------------------------------------------------------------------
 // LVGL draw buffer
@@ -45,16 +52,17 @@ static lv_disp_drv_t disp_drv;
 static uint32_t last_tick_ms = 0;
 
 static void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
-  const int16_t x1 = static_cast<int16_t>(area->x1);
-  const int16_t y1 = static_cast<int16_t>(area->y1);
-  const int16_t w = static_cast<int16_t>(area->x2 - area->x1 + 1);
-  const int16_t h = static_cast<int16_t>(area->y2 - area->y1 + 1);
+  const int32_t x1 = area->x1;
+  const int32_t y1 = area->y1;
+  const int32_t x2 = area->x2;
+  const int32_t y2 = area->y2;
 
-  // LVGL provides a contiguous RGB565 buffer for this area.
-  // Push the whole block to the panel in one call so SquareLine screens render fully.
-  uint16_t *px = reinterpret_cast<uint16_t *>(color_p);
-  display.drawRGBBitmap(x1, y1, px, w, h);
-
+  uint32_t i = 0;
+  for (int32_t y = y1; y <= y2; y++) {
+    for (int32_t x = x1; x <= x2; x++) {
+      display.writePixel(x, y, color_p[i++].full);
+    }
+  }
   lv_disp_flush_ready(disp);
 }
 
@@ -80,7 +88,14 @@ void setup() {
   disp_drv.draw_buf = &draw_buf;
   lv_disp_drv_register(&disp_drv);
 
+#if HAS_SQUARELINE_UI
   ui_init();
+#else
+  // Fallback content so screen is visibly active even without generated UI.
+  lv_obj_t *label = lv_label_create(lv_scr_act());
+  lv_label_set_text(label, "LVGL ready");
+  lv_obj_center(label);
+#endif
 
   last_tick_ms = millis();
 }
