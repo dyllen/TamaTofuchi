@@ -29,7 +29,7 @@ static constexpr uint16_t SCREEN_H = 128;
 Adafruit_SSD1351 display(SCREEN_W, SCREEN_H, &SPI, TFT_CS, TFT_DC, TFT_RST);
 
 // -----------------------------------------------------------------------------
-// SquareLine Studio UI includes (uncomment when your generated files are added)
+// SquareLine Studio generated UI
 // -----------------------------------------------------------------------------
 #if defined(__has_include)
 #if __has_include("ui.h")
