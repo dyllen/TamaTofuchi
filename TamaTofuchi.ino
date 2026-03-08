@@ -13,11 +13,15 @@
 // -----------------------------------------------------------------------------
 // Display + pinout (same wiring as before)
 // -----------------------------------------------------------------------------
-static constexpr uint8_t TFT_CS   = 3;
-static constexpr uint8_t TFT_DC   = 4;
-static constexpr uint8_t TFT_RST  = 5;
-static constexpr uint8_t TFT_SCK  = 8;
-static constexpr uint8_t TFT_MOSI = 10;
+static constexpr uint8_t TFT_CS  = 3;
+static constexpr uint8_t TFT_DC  = 4;
+static constexpr uint8_t TFT_RST = 5;
+
+// On many SSD1351 breakouts these are labeled SCL/SDA, but in SPI mode they map to:
+//   display SCL -> SPI SCK (clock)
+//   display SDA -> SPI MOSI (data out from MCU)
+static constexpr uint8_t TFT_SCL  = 8;   // SPI clock (SCK)
+static constexpr uint8_t TFT_SDA  = 10;  // SPI MOSI
 
 static constexpr uint16_t SCREEN_W = 128;
 static constexpr uint16_t SCREEN_H = 128;
@@ -65,7 +69,8 @@ static void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t
 void setup() {
   Serial.begin(115200);
 
-  SPI.begin(TFT_SCK, -1, TFT_MOSI, TFT_CS);
+  Serial.println("SSD1351 SPI mapping: SCL->SCK, SDA->MOSI");
+  SPI.begin(TFT_SCL, -1, TFT_SDA, TFT_CS);
   display.begin();
   // Hardware sanity check: briefly flash white so you can confirm panel power.
   display.fillScreen(0xFFFF);
