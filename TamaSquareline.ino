@@ -50,8 +50,12 @@ unsigned long lastSelectPressTime = 0;
 unsigned long lastPatPressTime = 0;
 
 const unsigned long debounceMs = 180;
+const unsigned long patAnimationDurationMs = 1000;
 
 static lv_obj_t *trackedScreen = nullptr;
+static lv_obj_t *lastActiveScreen = nullptr;
+static bool isPatAnimationRunning = false;
+static unsigned long patAnimationStartTime = 0;
 static int32_t preferredFocusIndex = -1;
 
 static bool isMenuFocusable(lv_obj_t *obj)
@@ -202,12 +206,41 @@ void handleSelectButton()
     }
 }
 
+static void startChonLoopOnScreen3()
+{
+    if (!lv_obj_is_valid(ui_Image11)) return;
+
+    lv_anim_del(ui_Image11, NULL);
+    chon_Animation(ui_Image11, 0);
+}
+
+void updateScreen3AnimationState(unsigned long now)
+{
+    lv_obj_t *activeScreen = lv_scr_act();
+
+    if (activeScreen == ui_Screen3 && lastActiveScreen != ui_Screen3) {
+        startChonLoopOnScreen3();
+        isPatAnimationRunning = false;
+    }
+
+    if (activeScreen != ui_Screen3) {
+        isPatAnimationRunning = false;
+    } else if (isPatAnimationRunning && (now - patAnimationStartTime >= patAnimationDurationMs)) {
+        startChonLoopOnScreen3();
+        isPatAnimationRunning = false;
+    }
+
+    lastActiveScreen = activeScreen;
+}
+
 void handlePatButton()
 {
     if (lv_scr_act() != ui_Screen3 || !lv_obj_is_valid(ui_Image11)) return;
 
-    lv_anim_del(ui_Image11, _ui_anim_callback_set_image_frame);
+    lv_anim_del(ui_Image11, NULL);
     pat_Animation(ui_Image11, 0);
+    isPatAnimationRunning = true;
+    patAnimationStartTime = millis();
 }
 
 void pollPhysicalButtons()
@@ -326,6 +359,7 @@ void loop() {
   last_tick_ms = now;
 
   lv_timer_handler();
+  updateScreen3AnimationState(now);
   pollPhysicalButtons();
   delay(5);
 }
