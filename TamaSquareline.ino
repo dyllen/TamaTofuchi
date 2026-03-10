@@ -206,7 +206,7 @@ void handlePatButton()
 {
     if (lv_scr_act() != ui_Screen3 || !lv_obj_is_valid(ui_Image11)) return;
 
-    lv_anim_del(ui_Image11, _ui_anim_callback_set_image_frame);
+    lv_anim_del(ui_Image11, NULL);
     pat_Animation(ui_Image11, 0);
 }
 
