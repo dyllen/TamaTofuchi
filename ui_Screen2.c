@@ -8,6 +8,7 @@
 lv_obj_t * ui_Screen2 = NULL;
 lv_obj_t * ui_Image3 = NULL;
 lv_obj_t * ui_menuBar1 = NULL;
+lv_obj_t * ui_Label1 = NULL;
 // event funtions
 
 // build funtions
@@ -36,6 +37,12 @@ void ui_Screen2_screen_init(void)
     lv_obj_set_style_bg_img_src(ui_comp_get_child(ui_menuBar1, UI_COMP_MENUBAR_FOODBTN), &ui_img_selected_bg_png,
                                 LV_PART_MAIN | LV_STATE_FOCUSED);
 
+    ui_Label1 = lv_label_create(ui_Screen2);
+    lv_obj_set_width(ui_Label1, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label1, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_Label1, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label1, "Food Screen");
+
 }
 
 void ui_Screen2_screen_destroy(void)
@@ -46,5 +53,6 @@ void ui_Screen2_screen_destroy(void)
     ui_Screen2 = NULL;
     ui_Image3 = NULL;
     ui_menuBar1 = NULL;
+    ui_Label1 = NULL;
 
 }

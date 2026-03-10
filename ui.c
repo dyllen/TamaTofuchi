@@ -7,11 +7,10 @@
 #include "ui_helpers.h"
 
 ///////////////////// VARIABLES ////////////////////
-lv_anim_t * chon_Animation(lv_obj_t * TargetObject, int delay);
 lv_anim_t * pat_Animation(lv_obj_t * TargetObject, int delay);
+lv_anim_t * anchon_Animation(lv_obj_t * TargetObject, int delay);
 
 // EVENTS
-void ui_event____initial_actions0(lv_event_t * e);
 lv_obj_t * ui____initial_actions0;
 
 // IMAGES AND IMAGE SETS
@@ -27,33 +26,6 @@ const lv_img_dsc_t * ui_imgset_an_chon[2] = {&ui_img_an_chon1_png, &ui_img_an_ch
 #endif
 
 ///////////////////// ANIMATIONS ////////////////////
-lv_anim_t * chon_Animation(lv_obj_t * TargetObject, int delay)
-{
-    lv_anim_t * out_anim;
-    ui_anim_user_data_t * PropertyAnimation_0_user_data = lv_mem_alloc(sizeof(ui_anim_user_data_t));
-    PropertyAnimation_0_user_data->target = TargetObject;
-    PropertyAnimation_0_user_data->imgset = (lv_img_dsc_t **)ui_imgset_an_chon;
-    PropertyAnimation_0_user_data->imgset_size = sizeof(ui_imgset_an_chon) / (sizeof(lv_img_dsc_t *));
-    PropertyAnimation_0_user_data->val = -1;
-    lv_anim_t PropertyAnimation_0;
-    lv_anim_init(&PropertyAnimation_0);
-    lv_anim_set_time(&PropertyAnimation_0, 500);
-    lv_anim_set_user_data(&PropertyAnimation_0, PropertyAnimation_0_user_data);
-    lv_anim_set_custom_exec_cb(&PropertyAnimation_0, _ui_anim_callback_set_image_frame);
-    lv_anim_set_values(&PropertyAnimation_0, 0, 1);
-    lv_anim_set_path_cb(&PropertyAnimation_0, lv_anim_path_linear);
-    lv_anim_set_delay(&PropertyAnimation_0, delay + 0);
-    lv_anim_set_deleted_cb(&PropertyAnimation_0, _ui_anim_callback_free_user_data);
-    lv_anim_set_playback_time(&PropertyAnimation_0, 0);
-    lv_anim_set_playback_delay(&PropertyAnimation_0, 0);
-    lv_anim_set_repeat_count(&PropertyAnimation_0, LV_ANIM_REPEAT_INFINITE);
-    lv_anim_set_repeat_delay(&PropertyAnimation_0, 0);
-    lv_anim_set_early_apply(&PropertyAnimation_0, false);
-    lv_anim_set_get_value_cb(&PropertyAnimation_0, &_ui_anim_callback_get_image_frame);
-    out_anim = lv_anim_start(&PropertyAnimation_0);
-
-    return out_anim;
-}
 lv_anim_t * pat_Animation(lv_obj_t * TargetObject, int delay)
 {
     lv_anim_t * out_anim;
@@ -81,16 +53,35 @@ lv_anim_t * pat_Animation(lv_obj_t * TargetObject, int delay)
 
     return out_anim;
 }
+lv_anim_t * anchon_Animation(lv_obj_t * TargetObject, int delay)
+{
+    lv_anim_t * out_anim;
+    ui_anim_user_data_t * PropertyAnimation_0_user_data = lv_mem_alloc(sizeof(ui_anim_user_data_t));
+    PropertyAnimation_0_user_data->target = TargetObject;
+    PropertyAnimation_0_user_data->imgset = (lv_img_dsc_t **)ui_imgset_an_chon;
+    PropertyAnimation_0_user_data->imgset_size = sizeof(ui_imgset_an_chon) / (sizeof(lv_img_dsc_t *));
+    PropertyAnimation_0_user_data->val = -1;
+    lv_anim_t PropertyAnimation_0;
+    lv_anim_init(&PropertyAnimation_0);
+    lv_anim_set_time(&PropertyAnimation_0, 500);
+    lv_anim_set_user_data(&PropertyAnimation_0, PropertyAnimation_0_user_data);
+    lv_anim_set_custom_exec_cb(&PropertyAnimation_0, _ui_anim_callback_set_image_frame);
+    lv_anim_set_values(&PropertyAnimation_0, 0, 1);
+    lv_anim_set_path_cb(&PropertyAnimation_0, lv_anim_path_linear);
+    lv_anim_set_delay(&PropertyAnimation_0, delay + 0);
+    lv_anim_set_deleted_cb(&PropertyAnimation_0, _ui_anim_callback_free_user_data);
+    lv_anim_set_playback_time(&PropertyAnimation_0, 0);
+    lv_anim_set_playback_delay(&PropertyAnimation_0, 0);
+    lv_anim_set_repeat_count(&PropertyAnimation_0, LV_ANIM_REPEAT_INFINITE);
+    lv_anim_set_repeat_delay(&PropertyAnimation_0, 0);
+    lv_anim_set_early_apply(&PropertyAnimation_0, false);
+    lv_anim_set_get_value_cb(&PropertyAnimation_0, &_ui_anim_callback_get_image_frame);
+    out_anim = lv_anim_start(&PropertyAnimation_0);
+
+    return out_anim;
+}
 
 ///////////////////// FUNCTIONS ////////////////////
-void ui_event____initial_actions0(lv_event_t * e)
-{
-    lv_event_code_t event_code = lv_event_get_code(e);
-
-    if(event_code == LV_EVENT_SCREEN_LOAD_START) {
-        chon_Animation(ui_Image2, 0);
-    }
-}
 
 ///////////////////// SCREENS ////////////////////
 
@@ -111,9 +102,6 @@ void ui_init(void)
     ui_Screen7_screen_init();
     ui_Screen8_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
-    lv_obj_add_event_cb(ui____initial_actions0, ui_event____initial_actions0, LV_EVENT_ALL, NULL);
-
-    lv_disp_load_scr(ui____initial_actions0);
     lv_disp_load_scr(ui_Screen1);
 }
 

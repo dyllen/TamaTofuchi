@@ -7,9 +7,17 @@
 
 lv_obj_t * ui_Screen1 = NULL;
 lv_obj_t * ui_Image1 = NULL;
-lv_obj_t * ui_Image2 = NULL;
 lv_obj_t * ui_menuBar = NULL;
+lv_obj_t * ui_homeImage = NULL;
 // event funtions
+void ui_event_Screen1(lv_event_t * e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+
+    if(event_code == LV_EVENT_SCREEN_LOADED) {
+        anchon_Animation(ui_homeImage, 0);
+    }
+}
 
 // build funtions
 
@@ -27,14 +35,6 @@ void ui_Screen1_screen_init(void)
     lv_obj_clear_flag(ui_Image1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_img_set_zoom(ui_Image1, 100);
 
-    ui_Image2 = lv_img_create(ui_Screen1);
-    lv_img_set_src(ui_Image2, &ui_img_an_chon1_png);
-    lv_obj_set_width(ui_Image2, LV_SIZE_CONTENT);   /// 128
-    lv_obj_set_height(ui_Image2, LV_SIZE_CONTENT);    /// 128
-    lv_obj_set_align(ui_Image2, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_Image2, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
-    lv_obj_clear_flag(ui_Image2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-
     ui_menuBar = ui_menuBar_create(ui_Screen1);
     lv_obj_set_x(ui_menuBar, -1);
     lv_obj_set_y(ui_menuBar, -1);
@@ -47,6 +47,16 @@ void ui_Screen1_screen_init(void)
 
     lv_obj_clear_state(ui_comp_get_child(ui_menuBar, UI_COMP_MENUBAR_SPICYBTN), LV_STATE_FOCUSED);     /// States
 
+    ui_homeImage = lv_img_create(ui_Screen1);
+    lv_img_set_src(ui_homeImage, &ui_img_an_chon1_png);
+    lv_obj_set_width(ui_homeImage, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_homeImage, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_homeImage, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_homeImage, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_homeImage, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    lv_obj_add_event_cb(ui_Screen1, ui_event_Screen1, LV_EVENT_ALL, NULL);
+
 }
 
 void ui_Screen1_screen_destroy(void)
@@ -56,7 +66,7 @@ void ui_Screen1_screen_destroy(void)
     // NULL screen variables
     ui_Screen1 = NULL;
     ui_Image1 = NULL;
-    ui_Image2 = NULL;
     ui_menuBar = NULL;
+    ui_homeImage = NULL;
 
 }

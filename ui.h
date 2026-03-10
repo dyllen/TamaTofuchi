@@ -40,17 +40,15 @@ extern "C" {
 
 ///////////////////// VARIABLES ////////////////////
 
-extern lv_anim_t * chon_Animation(lv_obj_t * TargetObject, int delay);
 extern lv_anim_t * pat_Animation(lv_obj_t * TargetObject, int delay);
+extern lv_anim_t * anchon_Animation(lv_obj_t * TargetObject, int delay);
 
 // EVENTS
 
-void ui_event____initial_actions0(lv_event_t * e);
 extern lv_obj_t * ui____initial_actions0;
 
 // IMAGES AND IMAGE SETS
 LV_IMG_DECLARE(ui_img_new_background_png);    // assets/new_background.png
-LV_IMG_DECLARE(ui_img_an_chon1_png);    // assets/an_chon1.png
 LV_IMG_DECLARE(ui_img_status_png);    // assets/status.png
 LV_IMG_DECLARE(ui_img_selected_bg_png);    // assets/selected_bg.png
 LV_IMG_DECLARE(ui_img_food_png);    // assets/food.png
@@ -60,6 +58,7 @@ LV_IMG_DECLARE(ui_img_med_png);    // assets/med.png
 LV_IMG_DECLARE(ui_img_poop_png);    // assets/poop.png
 LV_IMG_DECLARE(ui_img_spicy_png);    // assets/spicy.png
 LV_IMG_DECLARE(ui_img_alert_png);    // assets/alert.png
+LV_IMG_DECLARE(ui_img_an_chon1_png);    // assets/an_chon1.png
 LV_IMG_DECLARE(ui_img_pat1_png);    // assets/pat1.png
 LV_IMG_DECLARE(ui_img_pat2_png);    // assets/pat2.png
 LV_IMG_DECLARE(ui_img_pat3_png);    // assets/pat3.png

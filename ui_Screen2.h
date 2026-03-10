@@ -16,6 +16,7 @@ extern void ui_Screen2_screen_destroy(void);
 extern lv_obj_t * ui_Screen2;
 extern lv_obj_t * ui_Image3;
 extern lv_obj_t * ui_menuBar1;
+extern lv_obj_t * ui_Label1;
 // CUSTOM VARIABLES
 
 #ifdef __cplusplus

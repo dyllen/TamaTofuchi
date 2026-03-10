@@ -34,11 +34,9 @@ void ui_Screen3_screen_init(void)
     lv_obj_add_state(ui_comp_get_child(ui_menuBar2, UI_COMP_MENUBAR_GAMEBTN), LV_STATE_FOCUSED);       /// States
 
     ui_Image11 = lv_img_create(ui_Screen3);
-    lv_img_set_src(ui_Image11, &ui_img_pat1_png);
+    lv_img_set_src(ui_Image11, &ui_img_an_chon1_png);
     lv_obj_set_width(ui_Image11, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Image11, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Image11, 2);
-    lv_obj_set_y(ui_Image11, 0);
     lv_obj_set_align(ui_Image11, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_Image11, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_Image11, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
