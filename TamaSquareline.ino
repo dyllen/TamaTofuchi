@@ -37,14 +37,17 @@ Adafruit_SSD1351 display(SCREEN_W, SCREEN_H, &SPI, TFT_CS, TFT_DC, TFT_RST);
 
 #define BTN_NEXT 2
 #define BTN_SELECT 21
+#define BTN_PAT 20
 
 lv_group_t *menuGroup = nullptr;
 
 bool lastNextState = HIGH;
 bool lastSelectState = HIGH;
+bool lastPatState = HIGH;
 
 unsigned long lastNextPressTime = 0;
 unsigned long lastSelectPressTime = 0;
+unsigned long lastPatPressTime = 0;
 
 const unsigned long debounceMs = 180;
 
@@ -199,10 +202,19 @@ void handleSelectButton()
     }
 }
 
+void handlePatButton()
+{
+    if (lv_scr_act() != ui_Screen3 || !lv_obj_is_valid(ui_Image11)) return;
+
+    lv_anim_del(ui_Image11, _ui_anim_callback_set_image_frame);
+    pat_Animation(ui_Image11, 0);
+}
+
 void pollPhysicalButtons()
 {
     bool currentNextState = digitalRead(BTN_NEXT);
     bool currentSelectState = digitalRead(BTN_SELECT);
+    bool currentPatState = digitalRead(BTN_PAT);
 
     unsigned long now = millis();
 
@@ -226,8 +238,19 @@ void pollPhysicalButtons()
         }
     }
 
+    // Detect new press on PAT button
+    if (lastPatState == HIGH && currentPatState == LOW)
+    {
+        if (now - lastPatPressTime > debounceMs)
+        {
+            handlePatButton();
+            lastPatPressTime = now;
+        }
+    }
+
     lastNextState = currentNextState;
     lastSelectState = currentSelectState;
+    lastPatState = currentPatState;
 }
 
 // -----------------------------------------------------------------------------
@@ -290,6 +313,7 @@ void setup() {
 
   pinMode(BTN_NEXT, INPUT_PULLUP);
   pinMode(BTN_SELECT, INPUT_PULLUP);
+  pinMode(BTN_PAT, INPUT_PULLUP);
   initMenuGroup();
   Serial.println("Menu group initialized");
 
