@@ -127,6 +127,59 @@ static int32_t getFocusableIndex(lv_obj_t *screen, lv_obj_t *target)
     return matchIndex;
 }
 
+// -----------------------------------------------------------------------------
+// Character stats
+// -----------------------------------------------------------------------------
+static int hungerStat = 10;
+static int happinessStat = 10;
+static int spicyStat = 10;
+static int sleepyStat = 10;
+
+static constexpr int kStatMin = 0;
+static constexpr int kStatMax = 10;
+static constexpr uint32_t kStatTickMs = 15000; // decay/update interval while playing
+
+static uint32_t lastStatTickMs = 0;
+
+static int clampStat(int value)
+{
+    if (value < kStatMin) return kStatMin;
+    if (value > kStatMax) return kStatMax;
+    return value;
+}
+
+static void refreshStatsLabels()
+{
+    if (ui_Label2 == nullptr) return;
+
+    lv_label_set_text_fmt(
+        ui_Label2,
+        "Hunger: %d\nHappiness: %d\nSpicy: %d\nSleepy: %d",
+        hungerStat,
+        happinessStat,
+        spicyStat,
+        sleepyStat);
+}
+
+static void updateStatsFromPlayTime(uint32_t nowMs)
+{
+    if (lastStatTickMs == 0) {
+        lastStatTickMs = nowMs;
+        return;
+    }
+
+    while (nowMs - lastStatTickMs >= kStatTickMs) {
+        lastStatTickMs += kStatTickMs;
+
+        hungerStat = clampStat(hungerStat + 1);
+        spicyStat = clampStat(spicyStat + 1);
+        sleepyStat = clampStat(sleepyStat + 1);
+        happinessStat = clampStat(happinessStat - 1);
+    }
+
+    refreshStatsLabels();
+}
+
 void initMenuGroup()
 {
     lv_obj_t *activeScreen = lv_scr_act();
@@ -207,9 +260,16 @@ void handlePatButton()
     if (lv_scr_act() == ui_Screen3) {
 		lv_anim_del(ui_Image11, NULL);
     	pat_Animation(ui_Image11, 0);
+
+        spicyStat = clampStat(spicyStat - 1);
+        happinessStat = clampStat(happinessStat + 1);
+        refreshStatsLabels();
     } else if(lv_scr_act() == ui_Screen2) {
     	lv_anim_del(ui_Image12, NULL);
     	eatNew_Animation(ui_Image12, 0);
+
+        hungerStat = clampStat(hungerStat - 1);
+        refreshStatsLabels();
     } else {
     	return;
     }
@@ -322,6 +382,8 @@ void setup() {
   initMenuGroup();
   Serial.println("Menu group initialized");
 
+  refreshStatsLabels();
+
   last_tick_ms = millis();
 }
 
@@ -329,6 +391,8 @@ void loop() {
   uint32_t now = millis();
   lv_tick_inc(now - last_tick_ms);
   last_tick_ms = now;
+
+  updateStatsFromPlayTime(now);
 
   lv_timer_handler();
   pollPhysicalButtons();
