@@ -204,10 +204,15 @@ void handleSelectButton()
 
 void handlePatButton()
 {
-    if (lv_scr_act() != ui_Screen3 || !lv_obj_is_valid(ui_Image11)) return;
-
-    lv_anim_del(ui_Image11, NULL);
-    pat_Animation(ui_Image11, 0);
+    if (lv_scr_act() == ui_Screen3) {
+		lv_anim_del(ui_Image11, NULL);
+    	pat_Animation(ui_Image11, 0);
+    } else if(lv_scr_act() == ui_Screen2) {
+    	lv_anim_del(ui_Image12, NULL);
+    	eatNew_Animation(ui_Image12, 0);
+    } else {
+    	return;
+    }
 }
 
 void pollPhysicalButtons()
